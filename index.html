@@ -566,268 +566,398 @@
   .row { display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-start; }
 
   /* Canvas chart */
-  .large-chart-wrap {
-    height: 260px;
-    background: rgba(20,24,39,.45);
-    border: 1px solid var(--c-border);
-    border-radius: var(--r-card);
-    padding: 10px;
-    position: relative;
-  }
-  .chart-caption {
-    position: absolute;
-    top: 12px; left: 14px;
-    font-size: 11px;
-    color: var(--c-text-3);
-    font-weight: 600;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-  }
+    .large-chart-wrap {
+      height: 260px;
+      background: rgba(20,24,39,.45);
+      border: 1px solid var(--c-border);
+      border-radius: var(--r-card);
+      padding: 10px;
+      position: relative;
+    }
+    .chart-caption {
+      position: absolute;
+      top: 12px; left: 14px;
+      font-size: 11px;
+      color: var(--c-text-3);
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
 
-  #app { position: relative; }
-</style>
+    /* Search suggestions */
+    .suggestions {
+      position: absolute;
+      left: 0; right: 0;
+      top: calc(100% + 6px);
+      background: #0e1322;
+      border: 1px solid var(--c-border-2);
+      border-radius: 12px;
+      list-style: none;
+      margin: 0; padding: 6px;
+      max-height: 320px;
+      overflow: auto;
+      z-index: 40;
+      box-shadow: var(--shadow-elevated);
+    }
+    .suggestions li {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      color: var(--c-text-2);
+      font-size: 13px;
+    }
+    .suggestions li:hover, .suggestions li[aria-selected="true"] {
+      background: rgba(59,130,246,.12);
+      color: var(--c-text);
+    }
+    .suggestions .sug-icon { width: 22px; height: 22px; border-radius: 50%; }
+    .suggestions .sug-icon img { width: 100%; height: 100%; border-radius: 50%; display: block; }
+    .suggestions .sug-name { color: var(--c-text); font-weight: 600; }
+    .suggestions .sug-sym { color: var(--c-text-3); font-size: 11px; font-weight: 700; text-transform: uppercase; margin-left: 4px; }
+
+    /* Coin detail modal */
+    .modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(2,4,10,.55);
+      z-index: 80;
+      display: none;
+    }
+    .modal {
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%) scale(.96);
+      width: min(860px, 96vw);
+      max-height: 88vh;
+      overflow: auto;
+      background: linear-gradient(180deg, #131827 0%, #0d101a 100%);
+      border: 1px solid var(--c-border-2);
+      border-radius: 16px;
+      box-shadow: var(--shadow-elevated);
+      z-index: 90;
+      padding: 22px;
+      display: none;
+      opacity: 0;
+      transition: opacity .2s ease, transform .22s ease;
+    }
+    .modal.open { display: block; opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    .modal-head {
+      display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .modal-head h3 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 22px;
+    }
+    .grid-details {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 14px;
+    }
+    @media (min-width: 760px) {
+      .grid-details { grid-template-columns: repeat(4, 1fr); }
+    }
+    .detail-item {
+      background: rgba(20,24,39,.5);
+      border: 1px solid var(--c-border);
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .detail-item .k { font-size: 12px; color: var(--c-text-3); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+    .detail-item .v { font-family: var(--font-display); font-weight: 700; color: var(--c-text); margin-top: 6px; font-size: 15px; word-break: break-word; }
+
+    .row-exchanges {
+      margin-top: 18px;
+    }
+    .row-exchanges h4 { margin: 14px 0 8px; font-family: var(--font-display); font-weight: 700; font-size: 16px; }
+    table.det { width: 100%; border-collapse: separate; border-spacing: 0; }
+    table.det th, table.det td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--c-border); color: var(--c-text-2); font-size: 13px; }
+    table.det th { color: var(--c-text-3); font-weight: 600; text-transform: uppercase; letter-spacing: .08em; font-size: 11.5px; }
+    table.det tr:last-child td, table.det tr:last-child th { border-bottom: none; }
+
+    .watchlist-clickable td { cursor: pointer; }
+    .watchlist-clickable tr:hover td { background: rgba(59,130,246,.06); }
+
+    #app { position: relative; }
+  </style>
 </head>
 <body>
   <div id="app">
-    <!-- NAV -->
-    <header class="nav">
-      <div class="container">
-        <a class="logo" href="#">
-          <span class="logo-mark"><span></span><span></span><span></span><span></span></span>
-          CoinAtlas
-        </a>
-        <nav aria-label="Primary">
-          <ul class="nav-links">
-            <li><a href="#markets">Markets</a></li>
-            <li><a href="#trending">Trending</a></li>
-            <li><a href="#ecosystem">Features</a></li>
-            <li><a href="#">API</a></li>
-          <li><a href="#">Docs</a></li>
-          </ul>
-        </nav>
-        <div class="nav-actions">
-          <button class="btn btn-ghost btn-sm" onclick="toggleWatchlistDrawer()" aria-label="Open watchlist">Watchlist</button>
-          <button class="btn btn-primary btn-sm" onclick="showToast('CoinAtlas API is live. Use free endpoints.')">Connect API</button>
+      <!-- NAV -->
+      <header class="nav">
+        <div class="container">
+          <a class="logo" href="#">
+            <span class="logo-mark"><span></span><span></span><span></span><span></span></span>
+            CoinAtlas
+          </a>
+          <nav aria-label="Primary">
+            <ul class="nav-links">
+              <li><a href="#markets">Markets</a></li>
+              <li><a href="#trending">Trending</a></li>
+              <li><a href="#ecosystem">Features</a></li>
+              <li><a href="#">API</a></li>
+              <li><a href="#">Docs</a></li>
+            </ul>
+          </nav>
+          <div class="nav-actions">
+            <button class="btn btn-ghost btn-sm" onclick="toggleWatchlistDrawer()" aria-label="Open watchlist">Watchlist</button>
+            <button class="btn btn-primary btn-sm" onclick="showToast('CoinAtlas API is live. Use free endpoints.')">Connect API</button>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
 
-    <!-- HERO -->
-    <section class="hero" aria-labelledby="hero-title">
-      <div class="container">
-        <div class="hero-grid">
-          <div>
-            <div class="badge"><span class="dot" aria-hidden="true"></span> Real-time markets</div>
-            <h1 id="hero-title">Track the <em>crypto</em> market, <span>clearly</span> and fast.</h1>
-            <p>CoinAtlas gives traders, investors, and analysts live prices, charting, and watchlists — designed for clarity, speed, and scale.</p>
-          </div>
-          <div class="hero-metrics" id="market-hero-metrics" role="status" aria-live="polite">
-            <div class="metric"><div class="label">Market Cap</div><div class="value num" id="hero-mcap">—</div></div>
-            <div class="metric"><div class="label">24h Volume</div><div class="value num" id="hero-vol">—</div></div>
-            <div class="metric"><div class="label">Active Coins</div><div class="value num" id="hero-coins">—</div></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- GLOBAL CHART -->
-    <section id="markets" aria-labelledby="markets-title">
-      <div class="container">
-        <div class="section-head reveal">
-          <div>
-            <h2 id="markets-title">Global Market</h2>
-            <p>Track total market cap over the last 48 hours — updated every 30s.</p>
-          </div>
-          <div class="search-wrap">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-            <input type="search" id="search" placeholder="Search a coin (name or symbol)..." autocomplete="off">
-          </div>
-        </div>
-        <div class="large-chart-wrap reveal">
-          <div class="chart-caption">Global Crypto Market Cap — 48h</div>
-          <canvas id="largeChart" aria-label="Line chart of global market cap" role="img"></canvas>
-        </div>
-      </div>
-    </section>
-
-    <!-- MOVERS + CHAMPIONS -->
-    <section id="trending" aria-labelledby="trending-title">
-      <div class="container">
-        <div class="section-head reveal">
-          <div>
-            <h2 id="trending-title">Trending &amp; Movements</h2>
-            <p>Live movers and market leaders, with 1h price charts.</p>
-          </div>
-        </div>
-
-        <div class="panel reveal" style="margin-bottom:14px;">
-          <div class="panel-head">
-            <p class="panel-title">Top movers (24h)</p>
-            <div class="panel-chips" role="tablist" aria-label="Filter movers">
-              <button class="chip active" data-movers="gainers" onclick="setMovers(this,'gainers')">Gainers</button>
-              <button class="chip" data-movers="losers" onclick="setMovers(this,'losers')">Losers</button>
-              <button class="chip" data-movers="vol" onclick="setMovers(this,'vol')">Volume</button>
+      <!-- HERO -->
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="container">
+          <div class="hero-grid">
+            <div>
+              <div class="badge"><span class="dot" aria-hidden="true"></span> Real-time markets</div>
+              <h1 id="hero-title">Track the <em>crypto</em> market, <span>clearly</span> and fast.</h1>
+              <p>CoinAtlas gives traders, investors, and analysts live prices, charting, and watchlists — designed for clarity, speed, and scale.</p>
+            </div>
+            <div class="hero-metrics" id="market-hero-metrics" role="status" aria-live="polite">
+              <div class="metric"><div class="label">Market Cap</div><div class="value num" id="hero-mcap">—</div></div>
+              <div class="metric"><div class="label">24h Volume</div><div class="value num" id="hero-vol">—</div></div>
+              <div class="metric"><div class="label">Active Coins</div><div class="value num" id="hero-coins">—</div></div>
             </div>
           </div>
-          <div class="table-wrap">
-            <table role="table" aria-label="Top movers">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Coin</th>
-                  <th>Price</th>
-                  <th>24h</th>
-                  <th>Market Cap</th>
-                  <th><span class="sort-icon">↕</span> Chart</th>
-                </tr>
-              </thead>
-              <tbody id="movers-body"></tbody>
-            </table>
-          </div>
         </div>
+      </section>
 
-        <div class="reveal">
-          <p class="panel-title" style="padding-left:2px;">Top 6 by Market Cap</p>
-          <div class="champions" id="top-champions" role="list" aria-label="Top 6 by market cap"></div>
+      <!-- GLOBAL CHART -->
+      <section id="markets" aria-labelledby="markets-title">
+        <div class="container">
+          <div class="section-head reveal">
+            <div>
+              <h2 id="markets-title">Global Market</h2>
+              <p>Track total market cap over the last 48 hours — updated every 30s.</p>
+            </div>
+            <div class="search-wrap" style="position:relative;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              <input type="search" id="search" placeholder="Search a coin (name or symbol)..." autocomplete="off">
+              <ul id="search-suggestions" class="suggestions" role="listbox" aria-label="Coin suggestions"></ul>
+            </div>
+          </div>
+          <div class="large-chart-wrap reveal">
+            <div class="chart-caption">Global Crypto Market Cap — 48h</div>
+            <canvas id="largeChart" aria-label="Line chart of global market cap" role="img"></canvas>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- WATCHLIST TABLE -->
-    <section id="watchlist" aria-labelledby="watchlist-title">
-      <div class="container">
-        <div class="section-head reveal">
-          <div>
-            <h2 id="watchlist-title">Watchlist</h2>
-            <p>256 coins across the tracked universe. Search, sort, and scan.</p>
+      <!-- MOVERS + CHAMPIONS -->
+      <section id="trending" aria-labelledby="trending-title">
+        <div class="container">
+          <div class="section-head reveal">
+            <div>
+              <h2 id="trending-title">Trending &amp; Movements</h2>
+              <p>Live movers and market leaders, with 1h price charts.</p>
+            </div>
           </div>
-          <div class="panel-chips">
-            <button class="btn btn-ghost btn-sm" onclick="refreshWatchlist()">Refresh</button>
+
+          <div class="panel reveal" style="margin-bottom:14px;">
+            <div class="panel-head">
+              <p class="panel-title">Top movers (24h)</p>
+              <div class="panel-chips" role="tablist" aria-label="Filter movers">
+                <button class="chip active" data-movers="gainers" onclick="setMovers(this,'gainers')">Gainers</button>
+                <button class="chip" data-movers="losers" onclick="setMovers(this,'losers')">Losers</button>
+                <button class="chip" data-movers="vol" onclick="setMovers(this,'vol')">Volume</button>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table role="table" aria-label="Top movers">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Coin</th>
+                    <th>Price</th>
+                    <th>24h</th>
+                    <th>Market Cap</th>
+                    <th><span class="sort-icon">↕</span> Chart</th>
+                  </tr>
+                </thead>
+                <tbody id="movers-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="reveal">
+            <p class="panel-title" style="padding-left:2px;">Top 6 by Market Cap</p>
+            <div class="champions" id="top-champions" role="list" aria-label="Top 6 by market cap"></div>
           </div>
         </div>
-        <div class="panel reveal">
-          <div class="panel-head">
-            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-              <p class="panel-title" style="margin:0;">Live markets</p>
-              <span class="badge" id="updated-badge">Updated just now</span>
+      </section>
+
+      <!-- WATCHLIST TABLE -->
+      <section id="watchlist" aria-labelledby="watchlist-title">
+        <div class="container">
+          <div class="section-head reveal">
+            <div>
+              <h2 id="watchlist-title">Watchlist</h2>
+              <p>256 coins across the tracked universe. Search, sort, and scan.</p>
             </div>
             <div class="panel-chips">
-              <button class="chip active" data-sort="market_cap" onclick="setSort(this,'market_cap')">Rank</button>
-              <button class="chip" data-sort="current_price" onclick="setSort(this,'current_price')">Price</button>
-              <button class="chip" data-sort="price_change_percentage_24h" onclick="setSort(this,'price_change_percentage_24h')">24h %</button>
-              <button class="chip" data-sort="market_cap" onclick="setSort(this,'market_cap')">Market Cap</button>
+              <button class="btn btn-ghost btn-sm" onclick="refreshWatchlist()">Refresh</button>
             </div>
           </div>
+          <div class="panel reveal">
+            <div class="panel-head">
+              <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                <p class="panel-title" style="margin:0;">Live markets</p>
+                <span class="badge" id="updated-badge">Updated just now</span>
+              </div>
+              <div class="panel-chips">
+                <button class="chip active" data-sort="market_cap" onclick="setSort(this,'market_cap')">Rank</button>
+                <button class="chip" data-sort="current_price" onclick="setSort(this,'current_price')">Price</button>
+                <button class="chip" data-sort="price_change_percentage_24h" onclick="setSort(this,'price_change_percentage_24h')">24h %</button>
+                <button class="chip" data-sort="market_cap" onclick="setSort(this,'market_cap')">Market Cap</button>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table role="table" aria-label="Watchlist">
+                <thead>
+                  <tr>
+                    <th><span class="sort-icon" onclick="setSortField('market_cap')">↕</span> Rank</th>
+                    <th>Coin</th>
+                    <th>Price (USD)</th>
+                    <th>1h</th>
+                    <th>24h</th>
+                    <th>7d</th>
+                    <th>Market Cap</th>
+                    <th>Volume(24h)</th>
+                    <th><span class="sort-icon" onclick="setSortField('market_cap')">↕</span> Last 7 Days</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="watch-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FEATURES -->
+      <section id="ecosystem" aria-labelledby="features-title">
+        <div class="container">
+          <div class="section-head reveal">
+            <div>
+              <h2 id="features-title">Built for crypto at scale</h2>
+              <p>Premium-quality data, designed for day traders and analysts.</p>
+            </div>
+          </div>
+          <div class="features-grid reveal">
+            <div class="feature">
+              <div class="feature-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              </div>
+              <h3>Live price streams</h3>
+              <p>Prices update every 30–60s via CoinGecko APIs, with automatic cache invalidation on demand.</p>
+            </div>
+            <div class="feature">
+              <div class="feature-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="13" rx="1"/><rect width="7" height="5" x="14" y="13" rx="1"/><rect width="7" height="9" x="14" y="3" rx="1"/><rect width="7" height="5" x="3" y="3" rx="1"/></svg>
+              </div>
+              <h3>Cross-market analytics</h3>
+              <p>Spot, DeFi, and meme tokens ranked together with transparent methodology.</p>
+            </div>
+            <div class="feature">
+              <div class="feature-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-7"/><path d="M5 7h7"/><path d="M10 3v18"/></svg>
+              </div>
+              <h3>Watchlists &amp; alerts</h3>
+              <p>Track 256 coins with custom watchlists, ranked by change, volume, or cap — live sparklines included.</p>
+            </div>
+            <div class="feature">
+              <div class="feature-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 1 0-20"/><path d="M2 12h20"/></svg>
+              </div>
+              <h3>Multi-chain ready</h3>
+              <p>Format and asset-agnostic architecture — extend across chains without changing your workflow.</p>
+            </div>
+            <div class="feature">
+              <div class="feature-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              <h3>Trusted-grade data</h3>
+              <p>Verifiable sources, transparent ranking, and consistent USD-equivalent calculation.</p>
+            </div>
+            <div class="feature">
+              <div class="feature-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              </div>
+              <h3>Developer &amp; API-first</h3>
+              <p>Built as a responsive web app with clean API endpoints. Integrate analytics without friction.</p>
+            </div>
+          </div>
+
+          <div class="cta-banner reveal">
+            <div class="container">
+              <h2>Start tracking with CoinAtlas</h2>
+              <p>Join thousands of investors using smarter, clearer data. Free tier available.</p>
+              <div class="row" style="margin-top:16px;">
+                <button class="btn btn-primary" onclick="showToast('API documentation available.')">Get started</button>
+                <button class="btn btn-ghost" onclick="showToast('Live demo available soon.')">View demo</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="site-footer">
+        <div class="container">
+          <div class="footer-col">
+            <a class="logo" href="#" style="font-weight:700;font-size:16px;">CoinAtlas</a>
+            <span>Track the market, one coin at a time.</span>
+          </div>
+          <div class="footer-col">
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+            <a href="#">Security</a>
+          </div>
+          <div class="footer-col">
+            <a href="#">Brand Assets</a>
+            <a href="#">API Docs</a>
+            <a href="#">Contact</a>
+          </div>
+        </div>
+      </footer>
+      <div id="toasts" aria-live="polite" aria-atomic="true"></div>
+
+      <div class="modal-backdrop" id="modal-backdrop"></div>
+      <div class="modal" id="coin-modal" aria-modal="true" role="dialog" aria-label="Coin details" tabindex="-1">
+        <div class="modal-head">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div id="modal-img" style="width:38px;height:38px;border-radius:50%;overflow:hidden;background:#0b0f1a;"></div>
+            <div>
+              <h3 id="modal-title">Coin</h3>
+              <div id="modal-sub" style="color:var(--c-text-3);font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;"></div>
+            </div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="closeCoinModal()">Close</button>
+        </div>
+        <div class="grid-details" id="modal-grid"></div>
+        <div class="row-exchanges">
+          <h4>Markets</h4>
           <div class="table-wrap">
-            <table role="table" aria-label="Watchlist">
+            <table class="det" role="table" aria-label="Market pairs">
               <thead>
                 <tr>
-                  <th><span class="sort-icon" onclick="setSortField('market_cap')">↕</span> Rank</th>
-                  <th>Coin</th>
-                  <th>Price (USD)</th>
-                  <th>1h</th>
-                  <th>24h</th>
-                  <th>7d</th>
-                  <th>Market Cap</th>
-                  <th>Volume(24h)</th>
-                  <th><span class="sort-icon" onclick="setSortField('market_cap')">↕</span> Last 7 Days</th>
-                  <th></th>
+                  <th>Exchange</th>
+                  <th>Pair</th>
+                  <th>Price</th>
+                  <th>Volume</th>
+                  <th>Trust Score</th>
                 </tr>
               </thead>
-              <tbody id="watch-body"></tbody>
+              <tbody id="modal-exchanges"></tbody>
             </table>
           </div>
         </div>
       </div>
-    </section>
-
-    <!-- FEATURES -->
-    <section id="ecosystem" aria-labelledby="features-title">
-      <div class="container">
-        <div class="section-head reveal">
-          <div>
-            <h2 id="features-title">Built for crypto at scale</h2>
-            <p>Premium-quality data, designed for day traders and analysts.</p>
-          </div>
-        </div>
-        <div class="features-grid reveal">
-          <div class="feature">
-            <div class="feature-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-            </div>
-            <h3>Live price streams</h3>
-            <p>Prices update every 30–60s via CoinGecko APIs, with automatic cache invalidation on demand.</p>
-          </div>
-          <div class="feature">
-            <div class="feature-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="13" rx="1"/><rect width="7" height="5" x="14" y="13" rx="1"/><rect width="7" height="9" x="14" y="3" rx="1"/><rect width="7" height="5" x="3" y="3" rx="1"/></svg>
-            </div>
-            <h3>Cross-market analytics</h3>
-            <p>Spot, DeFi, and meme tokens ranked together with transparent methodology.</p>
-          </div>
-          <div class="feature">
-            <div class="feature-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-7"/><path d="M5 7h7"/><path d="M10 3v18"/></svg>
-            </div>
-            <h3>Watchlists &amp; alerts</h3>
-            <p>Track 256 coins with custom watchlists, ranked by change, volume, or cap — live sparklines included.</p>
-          </div>
-          <div class="feature">
-            <div class="feature-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 1 0-20"/><path d="M2 12h20"/></svg>
-            </div>
-            <h3>Multi-chain ready</h3>
-            <p>Format and asset-agnostic architecture — extend across chains without changing your workflow.</p>
-          </div>
-          <div class="feature">
-            <div class="feature-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            </div>
-            <h3>Trusted-grade data</h3>
-            <p>Verifiable sources, transparent ranking, and consistent USD-equivalent calculation.</p>
-          </div>
-          <div class="feature">
-            <div class="feature-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            </div>
-            <h3>Developer &amp; API-first</h3>
-            <p>Built as a responsive web app with clean REST endpoints. Integrate analytics without friction.</p>
-          </div>
-        </div>
-
-        <div class="cta-banner reveal">
-          <div class="container">
-            <h2>Start tracking with CoinAtlas</h2>
-            <p>Join thousands of investors using smarter, clearer data. Free tier available.</p>
-            <div class="row" style="margin-top:16px;">
-              <button class="btn btn-primary" onclick="showToast('API documentation available.')">Get started</button>
-              <button class="btn btn-ghost" onclick="showToast('Live demo available soon.')">View demo</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <footer class="site-footer">
-      <div class="container">
-        <div class="footer-col">
-          <a class="logo" href="#" style="font-weight:700;font-size:16px;">CoinAtlas</a>
-          <span>Track the market, one coin at a time.</span>
-        </div>
-        <div class="footer-col">
-          <a href="#">Privacy</a>
-          <a href="#">Terms</a>
-          <a href="#">Security</a>
-        </div>
-        <div class="footer-col">
-          <a href="#">Brand Assets</a>
-          <a href="#">API Docs</a>
-          <a href="#">Contact</a>
-        </div>
-      </div>
-    </footer>
-    <div id="toasts" aria-live="polite" aria-atomic="true"></div>
-  </div>
+    </div>
 
 <script>
 /* ==================== STATE ==================== */
@@ -838,6 +968,7 @@ const state = {
   sortDir: 'desc',
   filter: '',
   moverMode: 'gainers',
+  suggestionAbort: null,
 };
 
 /* ==================== HELPERS ==================== */
@@ -1090,7 +1221,7 @@ function renderWatchlist() {
     const chg24 = c.price_change_percentage_24h;
     const chg7 = c.price_change_percentage_7d_in_currency;
     return `
-      <tr>
+      <tr class="watchlist-clickable" onclick="openCoinModalById('${escapeHtml(c.id || '')}')">
         <td class="num">${rank}</td>
         <td>
           <div class="coin-info">
@@ -1106,7 +1237,7 @@ function renderWatchlist() {
         <td class="num">${fmtB(c.total_volume)}</td>
         <td><span class="spark-wrap"><canvas class="spark" data-points="${escapeHtml(JSON.stringify(c.sparkline_in_7d?.price || []))}" data-color="rgb(96,165,250)"></canvas></span></td>
         <td>
-          <div style="display:flex;gap:6px;">
+          <div style="display:flex;gap:6px;" onclick="event.stopPropagation();">
             <button class="btn btn-ghost btn-sm" onclick="showToast('Buy ${escapeHtml(c.symbol)} signal created.')">Buy</button>
             <button class="btn btn-ghost btn-sm" onclick="showToast('Sell ${escapeHtml(c.symbol)} signal created.')">Sell</button>
           </div>
@@ -1137,13 +1268,132 @@ function setSortField(key) {
 }
 
 function setSort(el, key) { setSortField(key); renderWatchlist(); }
-function setMovers(el, mode) { state.moverMode = mode; document.querySelectorAll('[data-movers]').forEach(x => x.classList.toggle('active', x.dataset.movers === mode)); renderMovers(); }
 function refreshWatchlist() { showToast('Refreshing watchlist…'); loadAndRender(); }
 function toggleWatchlistDrawer() { showToast('Watchlist drawer — coming next.'); }
 
-const escapeHtml = (s) => (s ?? '').toString().replace(/[&<>'"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]));
+/* ==================== SEARCH SUGGESTIONS ==================== */
+function openSuggestions() { const el = document.getElementById('search-suggestions'); if (el) el.style.display = 'block'; }
+function closeSuggestions() { const el = document.getElementById('search-suggestions'); if (el) el.style.display = 'none'; }
 
-document.getElementById('search').addEventListener('input', e => { state.filter = e.target.value; renderWatchlist(); });
+async function loadSuggestions(q) {
+  const list = document.getElementById('search-suggestions');
+  if (!list) return;
+  if (!q || q.length < 1) { list.innerHTML = ''; closeSuggestions(); return; }
+  try {
+    if (state.suggestionAbort) state.suggestionAbort.abort();
+    state.suggestionAbort = new AbortController();
+    const ctrl = state.suggestionAbort;
+    const r = await fetch('https://api.coingecko.com/api/v3/search?query=' + encodeURIComponent(q), { signal: ctrl.signal });
+    const j = await r.json();
+    const coins = (j.coins || []).slice(0, 8);
+    list.innerHTML = coins.map(c => `
+      <li aria-selected="false" onclick="event.preventDefault(); pickSuggestion('${escapeHtml(c.id||c.name)}', '${escapeHtml(c.symbol)}', '${escapeHtml(c.name)}')">
+        <span class="sug-icon"><img src="${c.thumb}" alt="" loading="lazy"></span>
+        <span class="sug-name">${escapeHtml(c.name)}</span>
+        <span class="sug-sym">${escapeHtml(c.symbol)}</span>
+      </li>
+    `).join('') || '<li style="color:var(--c-text-3);">No matches</li>';
+    openSuggestions();
+  } catch (e) {
+    list.innerHTML = '';
+    closeSuggestions();
+  }
+}
+
+function pickSuggestion(id, symbol, name) {
+  state.filter = `${name} ${symbol}`.trim().toLowerCase();
+  renderWatchlist();
+  closeSuggestions();
+  document.getElementById('search').value = state.filter;
+  openCoinModalById(id);
+}
+
+/* ==================== COIN DETAIL MODAL ==================== */
+function openCoinModalById(id) {
+  const coin = state.coins.find(c => c.id === id);
+  if (!coin) { showToast('Coin not found in loaded list. Please try again.'); return; }
+  openCoinModal(coin);
+}
+
+function openCoinModal(c) {
+  const modal = document.getElementById('coin-modal');
+  const backdrop = document.getElementById('modal-backdrop');
+  document.getElementById('modal-title').textContent = c.name;
+  document.getElementById('modal-sub').textContent = c.symbol;
+  document.getElementById('modal-img').innerHTML = `<img src="${c.image}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" loading="lazy">`;
+
+  const price = c.current_price;
+  const mcap = c.market_cap;
+  const vol = c.total_volume;
+  const high = c.high_24h;
+  const low = c.low_24h;
+  const chg1 = c.price_change_percentage_1h_in_currency;
+  const chg24 = c.price_change_percentage_24h;
+  const chg7 = c.price_change_percentage_7d_in_currency;
+  const supply = c.circulating_supply;
+  const max = c.max_supply;
+  const ath = c.ath;
+  const atl = c.atl;
+  const athDate = c.ath_date;
+
+  document.getElementById('modal-grid').innerHTML = `
+    <div class="detail-item"><div class="k">Price (USD)</div><div class="v">${fmtUSD(price)}</div></div>
+    <div class="detail-item"><div class="k">Market Cap</div><div class="v">${fmtB(mcap)}</div></div>
+    <div class="detail-item"><div class="k">Volume 24h</div><div class="v">${fmtB(vol)}</div></div>
+    <div class="detail-item"><div class="k">24h High / Low</div><div class="v">${high ? fmtUSD(high) : '—'} / ${low ? fmtUSD(low) : '—'}</div></div>
+    <div class="detail-item"><div class="k">1h %</div><div class="v ${getChangeClass(chg1)}">${chg1 != null ? pct(chg1) : '—'}</div></div>
+    <div class="detail-item"><div class="k">24h %</div><div class="v ${getChangeClass(chg24)}">${chg24 != null ? pct(chg24) : '—'}</div></div>
+    <div class="detail-item"><div class="k">7d %</div><div class="v ${getChangeClass(chg7)}">${chg7 != null ? pct(chg7) : '—'}</div></div>
+    <div class="detail-item"><div class="k">ATH / ATL</div><div class="v">${ath ? fmtUSD(ath) : '—'} / ${atl ? fmtUSD(atl) : '—'}</div></div>
+    <div class="detail-item"><div class="k">Circulating Supply</div><div class="v">${supply ? supply.toLocaleString() + ' ' + c.symbol.toUpperCase() : '—'}</div></div>
+    <div class="detail-item"><div class="k">Max Supply</div><div class="v">${max ? max.toLocaleString() + ' ' + c.symbol.toUpperCase() : '∞ / N/A'}</div></div>
+    <div class="detail-item"><div class="k">FDV</div><div class="v">${max && price ? fmtB(max * price) : 'N/A'}</div></div>
+    <div class="detail-item"><div class="k">Rank</div><div class="v">#${c.market_cap_rank ?? '—'}</div></div>
+  `;
+
+  if (c.tickers && c.tickers.length) {
+    const top = c.tickers
+      .filter(t => t.trade_url)
+      .slice(0, 20);
+    document.getElementById('modal-exchanges').innerHTML = top.map(t => `
+      <tr>
+        <td>${escapeHtml(t.market?.name || '—')}</td>
+        <td>${escapeHtml(t.base ? t.base + '/' + (t.target || '') : '—')}</td>
+        <td>${fmtUSD(t.last)}</td>
+        <td>${fmtB((t.converted_volume && t.converted_volume.usd) || 0)}</td>
+        <td>${t.trust_score ? t.trust_score.toUpperCase() : '—'}</td>
+      </tr>
+    `).join('');
+  } else {
+    document.getElementById('modal-exchanges').innerHTML = '<tr><td colspan="5" style="color:var(--c-text-3);">Market data unavailable in free tier.</td></tr>';
+  }
+
+  backdrop.style.display = 'block';
+  modal.style.display = 'block';
+  requestAnimationFrame(() => modal.classList.add('open'));
+}
+
+function closeCoinModal() {
+  const modal = document.getElementById('coin-modal');
+  const backdrop = document.getElementById('modal-backdrop');
+  if (!modal || !backdrop) return;
+  modal.classList.remove('open');
+  setTimeout(() => {
+    modal.style.display = 'none';
+    modal.style.opacity = '0';
+    backdrop.style.display = 'none';
+  }, 220);
+}
+
+document.getElementById('modal-backdrop').addEventListener('click', closeCoinModal);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCoinModal(); });
+document.addEventListener('click', e => {
+  const s = document.getElementById('search-suggestions');
+  const input = document.getElementById('search');
+  if (s && input && !s.contains(e.target) && e.target !== input) closeSuggestions();
+});
+
+const escapeHtml = (s) => (s ?? '').toString().replace(/[&<>'"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]));
 
 /* ==================== REVEAL ==================== */
 const io = new IntersectionObserver(entries => {
